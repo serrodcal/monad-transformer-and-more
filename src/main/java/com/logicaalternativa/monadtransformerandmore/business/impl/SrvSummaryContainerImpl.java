@@ -2,6 +2,8 @@ package com.logicaalternativa.monadtransformerandmore.business.impl;
 
 import static com.logicaalternativa.monadtransformerandmore.util.TDD.$_notYetImpl;
 
+import com.logicaalternativa.monadtransformerandmore.bean.Book;
+import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import com.logicaalternativa.monadtransformerandmore.bean.Summary;
 import com.logicaalternativa.monadtransformerandmore.business.SrvSummaryContainer;
 import com.logicaalternativa.monadtransformerandmore.container.Container;
@@ -11,6 +13,9 @@ import com.logicaalternativa.monadtransformerandmore.service.container.ServiceBo
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceChapterContainer;
 import com.logicaalternativa.monadtransformerandmore.service.container.ServiceSalesContainer;
 import com.logicaalternativa.monadtransformerandmore.errors.Error;
+
+import javax.swing.text.html.Option;
+import java.util.Optional;
 
 public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 	
@@ -38,7 +43,25 @@ public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 
 	@Override
 	public Container<Error, Summary> getSummary(Integer idBook) {
-		
+
+		Container<Error, Book> bookC = srvBook.getBook(idBook);
+		Container<Error, Sales> salesC = srvSales.getSales(idBook);
+
+		if (bookC.isOk()) {
+
+			final Book book = bookC.getValue();
+
+			if (salesC.isOk()) {
+
+				final Sales sales = salesC.getValue();
+
+				final Summary summary = new Summary(book, null, Optional.of(sales), null);
+
+				return Container.value(summary);
+
+			}
+		}
+
 		return $_notYetImpl();
 		
 	}
