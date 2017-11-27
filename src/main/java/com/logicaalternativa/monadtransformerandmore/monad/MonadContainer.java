@@ -29,20 +29,21 @@ public interface MonadContainer<E> {
 
 	default <A,T> Container<E, T> map( Container<E, A> from, Function<A, T> f ) {
 
-		return $_notYetImpl();
+		return flatMap(from, s -> pure(f.apply(s)));
 
 	}
 
 	default <T> Container<E, T> recover( Container<E, T> from, Function<E, T> f ) {
 
-		return $_notYetImpl();
+		return recoverWith(from, s -> pure(f.apply(s)));
 
 	}
 
 
 	default <T> Container<E, T> flatten( Container<E, Container<E, T>> from ) {
 
-		return $_notYetImpl();
+		return flatMap(from, s -> s);
+		//return flatMap(from, Function::identity());
 
 	}
 

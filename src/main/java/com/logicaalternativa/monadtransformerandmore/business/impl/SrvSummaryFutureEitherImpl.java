@@ -52,7 +52,7 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 		this.m= m;
 	}
 
-	@Override
+	/*@Override
 	public Future<Either<Error, Summary>> getSummary(Integer idBook) {
 
 		//Primero creamos una promesa del resultado, en este caso, de un Either<Error, Summary>
@@ -93,6 +93,16 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 				}, ExecutionContexts.global());
 
 		return promise.future();
+	}*/
+
+	@Override
+	public Future<Either<Error, Summary>> getSummary(Integer idBook) {
+
+		Future<Either<Error, Book>> bookF = srvBook.getBook(idBook);
+		Future<Either<Error, Sales>> salesF = srvSales.getSales(idBook);
+
+		return m.map2(bookF, salesF, (book, sales) -> new Summary(book, null, Optional.of(sales), null));
+
 	}
 
 }

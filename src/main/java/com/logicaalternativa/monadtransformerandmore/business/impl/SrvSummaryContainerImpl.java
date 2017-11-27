@@ -42,7 +42,7 @@ public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 
 
 	@Override
-	public Container<Error, Summary> getSummary(Integer idBook) {
+	/*public Container<Error, Summary> getSummary(Integer idBook) {
 
 		Container<Error, Book> bookC = srvBook.getBook(idBook);
 		Container<Error, Sales> salesC = srvSales.getSales(idBook);
@@ -69,6 +69,15 @@ public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 			}
 		});
 		
+	}*/
+
+	public Container<Error, Summary> getSummary(Integer idBook) {
+
+		Container<Error, Book> bookC = srvBook.getBook(idBook);
+		Container<Error, Sales> salesC = srvSales.getSales(idBook);
+
+		return m.map2(bookC, salesC, (book, sales) -> new Summary(book, null, Optional.of(sales), null));
+
 	}
 
 }

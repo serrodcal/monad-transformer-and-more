@@ -32,27 +32,30 @@ public interface MonadFutEither<E> {
 
 	default <A,T> Future<Either<E,T>> map( Future<Either<E, A>> from, Function<A, T> f ) {
 
-		return $_notYetImpl();
+		return flatMap(from, s -> pure(f.apply(s)));
 
 	}
 
 	default <T> Future<Either<E,T>> recover( Future<Either<E,T>> from, Function<E, T> f ) {
 
-		return $_notYetImpl();
+		return recoverWith(from, s -> pure(f.apply(s)));
 
 	}
 	
 	default <T> Future<Either<E,T>> flatten( Future<Either<E,Future<Either<E,T>>>> from ) {
 
-		return $_notYetImpl();
+		return flatMap(from, s -> s);
+		//return flatMap(from, Function::identity());
 
 	}
 
-	default <A,B,T> Future<Either<E,T>> flapMap2( Future<Either<E, A>> fromA, 
+	default <A,B,T> Future<Either<E,T>> flatMap2( Future<Either<E, A>> fromA,
 			Future<Either<E, B>> fromB, 
 			BiFunction<A,B,Future<Either<E,T>>> f  ) {
 
-		return $_notYetImpl();
+		return flatMap( fromA,
+				a -> flatMap( fromB,
+						b -> f.apply(a,b)));
 
 	}
 
@@ -62,7 +65,7 @@ public interface MonadFutEither<E> {
 			Future<Either<E, B>> fromB, 
 			BiFunction<A,B,T> f  ) {
 
-		return $_notYetImpl();
+		return flatMap(fromA, fromB, (a,b) -> pure(f.apply(a,b) ));
 
 	}
 
