@@ -62,7 +62,12 @@ public class SrvSummaryContainerImpl implements SrvSummaryContainer<Error> {
 			}
 		}
 
-		return $_notYetImpl();
+		return Container.error(new Error() {
+			@Override
+			public String getDescription() {
+				return "There is an error";
+			}
+		});
 		
 	}
 

@@ -1,9 +1,11 @@
 package com.logicaalternativa.monadtransformerandmore.business.impl;
 
+import akka.dispatch.Futures$;
 import akka.dispatch.OnComplete;
 import com.logicaalternativa.monadtransformerandmore.bean.Book;
 import com.logicaalternativa.monadtransformerandmore.bean.Sales;
 import scala.Function1;
+import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import scala.concurrent.Promise;
 import scala.runtime.BoxedUnit;
@@ -55,7 +57,7 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 
 		//Primero creamos una promesa del resultado, en este caso, de un Either<Error, Summary>
 
-		Promise<Either<Error, Summary>> promise = Future.promise();
+		Promise<Either<Error, Summary>> promise = Futures.promise();
 
 		Future<Either<Error, Book>> book = srvBook.getBook(idBook);
 		Future<Either<Error, Sales>> sales = srvSales.getSales(idBook);
@@ -77,22 +79,20 @@ public class SrvSummaryFutureEitherImpl implements SrvSummaryFutureEither<Error>
 											if (success.isRight()) {
 												final Sales sales = success.right().get();
 
-												final Summary summary = new Summary(book, null, Optional.of(Sales), null);
+												final Summary summary = new Summary(book, null, Optional.of(sales), null);
 
 												promise.success(new Right<Error, Summary>(summary));
 											}
 										}
 									}
 
-								});
+								}, ExecutionContexts.global());
 							}
 						}
 					}
-				}
+				}, ExecutionContexts.global());
 
-		);
-
-		return $_notYetImpl();
+		return promise.future();
 	}
 
 }
