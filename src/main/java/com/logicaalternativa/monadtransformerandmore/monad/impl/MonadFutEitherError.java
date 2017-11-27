@@ -40,7 +40,7 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 			Function<A, Future<Either<Error, T>>> f) {
 		
 		return from.flatMap( Java8.mapperF(
-				(Either<Error, T> s) -> {
+				(Either<Error, A> s) -> {
 					if(s.isRight()) {
 						return f.apply(s.right().get());
 					} else {
@@ -52,7 +52,7 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 					public Either<Error, T> recover(Throwable failure) throws Throwable {
 						return new Left<>(new MyError("Exception : " + failure.getMessage()));
 					}
-		});
+		}, ec);
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 	}
 
 	@Override
-	public <A, T> Future<Either<Error, T>> recoverWith(
-			Future<Either<Error, A>> from,
+	public <T> Future<Either<Error, T>> recoverWith(
+			Future<Either<Error, T>> from,
 			Function<Error, Future<Either<Error, T>>> f) {
 
 		return from.flatMap(Java8.mapperF(
@@ -75,10 +75,10 @@ public class MonadFutEitherError implements MonadFutEither<Error> {
 					}
 				}),
 				ec).recover(new Recover<Either<Error, T>>() {
-			@Override
-			public Either<Error, T> recover(Throwable failure) throws Throwable {
-				return new Left<>(new MyError("Exception : " + failure.getMessage()));
-			}
-		});
+					@Override
+					public Either<Error, T> recover(Throwable failure) throws Throwable {
+						return new Left<>(new MyError("Exception : " + failure.getMessage()));
+					}
+		}, ec);
 	}
 }

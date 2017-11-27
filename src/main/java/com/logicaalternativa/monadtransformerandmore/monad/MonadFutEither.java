@@ -24,7 +24,7 @@ public interface MonadFutEither<E> {
 	
 	<T> Future<Either<E,T>> raiseError( E error );
 	
-	<A,T> Future<Either<E,T>> recoverWith( Future<Either<E, A>> from, Function<E, Future<Either<E,T>>> f );
+	<T> Future<Either<E,T>> recoverWith( Future<Either<E, T>> from, Function<E, Future<Either<E,T>>> f );
 
 	/**
 	 * Deriveds
@@ -65,7 +65,7 @@ public interface MonadFutEither<E> {
 			Future<Either<E, B>> fromB, 
 			BiFunction<A,B,T> f  ) {
 
-		return flatMap(fromA, fromB, (a,b) -> pure(f.apply(a,b) ));
+		return flatMap2(fromA, fromB, (a,b) -> pure(f.apply(a,b)));
 
 	}
 
