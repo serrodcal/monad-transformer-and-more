@@ -11,31 +11,52 @@ import com.logicaalternativa.monadtransformerandmore.errors.Error;
 public class MonadContainerError implements MonadContainer<Error> {
 
 	@Override
-	public <T> Container<Error, T> pure(T value) {
+	public <T> Container<Error, T> pure(T aValue) {
 		
-		return $_notYetImpl();
+		return Container.value(aValue);
 			
 	}
 
 	@Override
 	public <A, T> Container<Error, T> flatMap(Container<Error, A> from,
 			Function<A, Container<Error, T>> f) {
-		
-		return $_notYetImpl();
+
+		if (from.isOk()) {
+
+			A value = from.getValue();
+
+			return f.apply(value);
+
+		} else {
+
+			//return Container.error( from.getError() );
+
+			return raiseError(from.getError());
+
+		}
+
 	}
 
 	@Override
-	public <T> Container<Error, T> raiseError(Error error) {
+	public <T> Container<Error, T> raiseError(Error aError) {
 		
-		return $_notYetImpl();
+		return Container.error(aError);
 		
 	}
 
 	@Override
-	public <A, T> Container<Error, T> recoverWith(Container<Error, A> from,
+	public <A, T> Container<Error, T> recoverWith(Container<Error, T> from,
 			Function<Error, Container<Error, T>> f) {
-		
-		return $_notYetImpl();
+
+		if (from.isOk()) {
+
+			return pure(from.getValue());
+
+		} else {
+
+			return f.apply(from.getError());
+
+		}
 		
 	}
 

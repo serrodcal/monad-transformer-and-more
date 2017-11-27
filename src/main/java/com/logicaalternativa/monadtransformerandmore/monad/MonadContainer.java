@@ -21,7 +21,7 @@ public interface MonadContainer<E> {
 	
 	<T> Container<E, T> raiseError( E error );
 	
-	<A,T> Container<E, T> recoverWith( Container<E, A> from, Function<E, Container<E, T>> f );
+	<A,T> Container<E, T> recoverWith( Container<E, T> from, Function<E, Container<E, T>> f );
 
 	/**
 	 * Derived
